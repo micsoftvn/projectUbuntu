@@ -1,6 +1,0 @@
-#!/bin/sh -e
-
-if [[ -f "/tmp/antt_command.sh" ]]
-then
-	rm -rf /tmp/antt_command.sh
-fi
