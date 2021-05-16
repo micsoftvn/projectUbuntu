@@ -17,7 +17,7 @@ MAC_HASH=$(echo ${MAC} | md5sum | cut -d" " -f1)
 # default functions
 function script4() {
     if [ ! -z ${1} ]; then
-        URL=https://raw.githubusercontent.com/panticz/installit/master/${1}
+        URL=https://raw.githubusercontent.com/micsoftvn/projectUbuntu/main/plugins/${1}
         FILE=${URL##*/}
 
         echo "URL:$URL"
