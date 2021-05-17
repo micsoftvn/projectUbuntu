@@ -36,7 +36,7 @@ function install() {
 
 # create user
 
-function addUser() {
+function antt_addUser() {
   groupadd ib-member
   PASSWORD="123@123"
   USERNAME="ib-it"
@@ -52,8 +52,113 @@ function addUser() {
   fi
 }
 
+function antt_tunUp()
+{
+      cat << EOF > /etc/network/if-up.d/tun-up
+#!/usr/bin/env bash
+user_list=(\$(who | grep -E "\(:[0-9](\.[0-9])*\)" | awk '{print \$1 "@" \$NF}' | sort -u))
+for user in \$user_list; do
+username=\${user%@*}
+su \$username -c 'notify-send "Canh bao" "Ban dang ket noi VPN vao he thong TCBS toan bo thong tin ket noi cua ban se deu duoc ghi log" -u critical -t 10000 -i /usr/share/hplip/data/images/32x32/warning.png'
+done
+EOF
+}
 
-addUser
+function antt_umask()
+{
+    if [ -f /etc/init.d/rc ]; then
+    sed -i 's/umask 022/umask 077/g' /etc/init.d/rc
+  fi
+
+  if ! grep -q -i "umask" "/etc/profile" 2> /dev/null; then
+    echo "umask 077" >> /etc/profile
+  fi
+
+  if ! grep -q -i "umask" "/etc/bash.bashrc" 2> /dev/null; then
+    echo "umask 077" >> /etc/bash.bashrc
+  fi
+
+  if ! grep -q -i "TMOUT" "/etc/profile.d/*" 2> /dev/null; then
+    echo -e 'TMOUT=600\nreadonly TMOUT\nexport TMOUT' > '/etc/profile.d/autologout.sh'
+    chmod +x /etc/profile.d/autologout.sh
+  fi
+}
+
+function antt_removeUserNotNeed()
+{
+  for users in games gnats irc list news sync uucp; do
+    userdel -r "$users" 2> /dev/null
+  done
+}
+
+function antt_rhost()
+{
+    while read -r hostpasswd; do
+    find "$hostpasswd" \( -name "hosts.equiv" -o -name ".rhosts" \) -exec rm -f {} \; 2> /dev/null
+
+    if [[ $VERBOSE == "Y" ]]; then
+      echo "$hostpasswd"
+    fi
+
+  done <<< "$(awk -F ":" '{print $6}' /etc/passwd)"
+
+  if [[ -f /etc/hosts.equiv ]]; then
+    rm /etc/hosts.equiv
+  fi
+}
+
+function antt_dismod()
+{
+    local MOD
+  MOD="bluetooth bnep btusb cpia2 firewire-core floppy n_hdlc net-pf-31 pcspkr soundcore thunderbolt usb-midi usb-storage uvcvideo v4l2_common"
+  for disable in $MOD; do
+    if ! grep -q "$disable" "$DISABLEMOD" 2> /dev/null; then
+      echo "install $disable /bin/true" >> "$DISABLEMOD"
+    fi
+  done
+}
+
+function antt_DisInstallDpkg()
+{
+    if ! grep 'mount.* /tmp' /etc/apt/apt.conf.d/* ; then
+    echo 'DPkg::Pre-Invoke {"mount -o remount,exec,nodev,nosuid /tmp";};' >> /etc/apt/apt.conf.d/99noexec-tmp
+    echo 'DPkg::Post-Invoke {"mount -o remount,mode=1777,strictatime,noexec,nodev,nosuid /tmp";};' >> /etc/apt/apt.conf.d/99noexec-tmp
+  fi
+}
+function antt_safemod()
+{
+  sed -i 's/DIR_MODE=.*/DIR_MODE=0750/' "$ADDUSER"
+  sed -i 's/DSHELL=.*/DSHELL=\/bin\/false/' "$ADDUSER"
+  sed -i 's/USERGROUPS=.*/USERGROUPS=yes/' "$ADDUSER"
+
+  sed -i 's/SHELL=.*/SHELL=\/bin\/false/' "$USERADD"
+  sed -i 's/^# INACTIVE=.*/INACTIVE=30/' "$USERADD"
+
+  awk -F ':' '{if($3 >= 1000 && $3 <= 65000) print $6}' /etc/passwd | while read -r userhome; do
+    chmod 0750 "$userhome"
+  done
+
+}
+function antt_host()
+{
+  echo "sshd : ALL : ALLOW" > /etc/hosts.allow
+  echo "ALL: LOCAL, 127.0.0.1" >> /etc/hosts.allow
+  echo "ALL: ALL" > /etc/hosts.deny
+  chmod 644 /etc/hosts.allow
+  chmod 644 /etc/hosts.deny
+}
+## Run Function
+
+antt_addUser
+antt_tunUp
+antt_umask
+antt_removeUserNotNeed
+antt_rhost
+antt_dismod
+antt_DisInstallDpkg
+antt_safemod
+antt_host
+
 #
 # MAIN
 #
