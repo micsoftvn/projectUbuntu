@@ -373,6 +373,8 @@ function antt_iptables()
     #In
     $IPT -A INPUT --in-interface lo -j ACCEPT                               
     $IPT -A INPUT -p icmp -m icmp --icmp-type 8 -j ACCEPT
+    $IPT -A INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j ACCEPT
+    $IPT -A INPUT -m state --state NEW -m tcp -p tcp -m multiport --dports 5901:5903,6001:6003 -j ACCEPT
     $IPT -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 }
 
