@@ -355,9 +355,11 @@ function antt_iptables()
     #Out
     $IPT -A OUTPUT --out-interface lo -j ACCEPT                            
     $IPT -A OUTPUT --out-interface tap0 -j ACCEPT
-    $IPT -A OUTPUT --out-interface tun0 -j ACCEPT            
+    $IPT -A OUTPUT --out-interface tun0 -j ACCEPT
     $IPT -A OUTPUT -d 52.148.89.165 -p tcp --dport 1194 -j ACCEPT                           
     $IPT -A OUTPUT -d 52.148.89.165 -p udp --dport 1194 -j ACCEPT
+    $IPT -A OUTPUT -d 13.76.31.219 -p tcp --dport 443 -j ACCEPT      # Openvpnas                         
+    $IPT -A OUTPUT -d 13.76.31.219 -p tcp --dport 80 -j ACCEPT      # Openvpnas
     $IPT -A OUTPUT -d 13.76.31.219 -p tcp --dport 1194 -j ACCEPT      # Openvpnas                         
     $IPT -A OUTPUT -d 13.76.31.219 -p udp --dport 1194 -j ACCEPT      # Openvpnas
     $IPT -A OUTPUT -d 10.105.1.14 -p tcp --dport 3129 -j ACCEPT                           
