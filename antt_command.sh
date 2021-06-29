@@ -426,7 +426,7 @@ cat << EOF > /usr/lib/firefox/distribution/policies.json
       "UseHTTPProxyForAllProtocols": false,
       "SSLProxy": "10.105.1.14:3129",
       "FTPProxy": "10.105.1.14:3129",
-      "Passthrough": "localhost"
+      "Passthrough": "localhost,.tcbs.com.vn"
     },
       "Certificates": {
       "Install": ["ca_antt.crt", "/root/ca_antt.crt"]
