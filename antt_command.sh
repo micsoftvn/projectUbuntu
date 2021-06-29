@@ -363,7 +363,9 @@ function antt_iptables()
     $IPT -A OUTPUT -d 13.76.31.219 -p tcp --dport 1194 -j ACCEPT      # Openvpnas                         
     $IPT -A OUTPUT -d 13.76.31.219 -p udp --dport 1194 -j ACCEPT      # Openvpnas
     $IPT -A OUTPUT -d 10.105.1.14 -p tcp --dport 3129 -j ACCEPT                           
-    $IPT -A OUTPUT -d 10.105.1.14 -p udp --dport 3129 -j ACCEPT                              
+    $IPT -A OUTPUT -d 10.105.1.14 -p udp --dport 3129 -j ACCEPT
+    $IPT -A OUTPUT -d 10.3.2.39 -p tcp --dport 80 -j ACCEPT
+    $IPT -A OUTPUT -d 10.3.2.39 -p tcp --dport 443 -j ACCEPT 
     $IPT -A OUTPUT -d 8.8.8.8 -p tcp --dport 53 -j ACCEPT                    
     $IPT -A OUTPUT -d 8.8.8.8 -p udp --dport 53 -j ACCEPT
     $IPT -A OUTPUT -d 10.14.2.23 -p tcp --dport 4505 -j ACCEPT         # Ket noi den master Server           
